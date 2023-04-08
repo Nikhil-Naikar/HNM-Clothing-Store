@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+<!-- {% include "header.html" %} -->
+
+{% block title %}HNM Style | Order Submitted{% endblock %}
+
+{% block content %}
+  <main id="main">
+    <section id="breadcrumbs" class="breadcrumbs">
+      <div class="container">
+
+        <div class="d-flex justify-content-between align-items-center">
+          <h2>Order submitted!</h2>
+          <ol>
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li>Order submitted!</li>
+          </ol>
+        </div>
+
+      </div>
+    </section><!-- End Breadcrumbs -->
+
+    <section id="services" class="services">
+      <div class="container">
+          <h4>Order submitted!</h4>
+      </div>
+    </section><!-- End Services Section -->
+
+  </main><!-- End #main -->
+
+{% include "footer.html" %}
+
+{% endblock %}

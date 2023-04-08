@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+<!-- {% include "header.html" %} -->
+
+{% block title %}The HNM Aesthetic | Login{% endblock %}
+
+{% block content %}
+  <main id="main">
+
+    <!-- ======= Breadcrumbs ======= -->
+    <section id="breadcrumbs" class="breadcrumbs">
+      <div class="container">
+
+        <div class="d-flex justify-content-between align-items-center">
+          <h2>Login</h2>
+          <ol>
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li>Login</li>
+          </ol>
+        </div>
+
+      </div>
+    </section><!-- End Breadcrumbs -->
+
+    <!-- ======= Sign Up Section ======= -->
+    <section id="services" class="services">
+      <div class="container">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <p style="color:red;">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+        {{ wtf.quick_form(form, novalidate=True, extra_classes="cafe-form", form_type="basic", button_map={"submit": "danger"}) }}
+      </div>
+    </section><!-- End Services Section -->
+  </main><!-- End #main -->
+
+{% include "footer.html" %}
+
+{% endblock %}

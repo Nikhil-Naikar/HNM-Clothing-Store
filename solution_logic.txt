@@ -1,0 +1,92 @@
+Owner:
+admin@email.com
+test123
+
+Customer:
+customer@email.com
+test123
+
+Frontend
+Every page will have...
+header.html
+Before Login: Home, Register (as Customer), Login buttons
+After Logging In (as Owner): Home, Logout, Add Item
+After Logging In (as Customer): Home, Logout, View Order, Edit Billing
+* Owner account will be premade
+
+footer.html
+Displays our names and the current year
+Nice-to-have: Show name of the current user and their user type
+
+Other page templates:
+index.html (Home/Dashboard Route)
+- Display (read/select) all items
+- If logged in as Owner:
+  - Can add new Items to homepage, delete Items, edit Items
+  - No Add to Order option
+- If logged in as Customer
+  - Can only view Items or add Reviews
+  - Add to Order option
+
+register.html
+- user form with wtf quick forms
+CUSTOMER Fields: Name, Email Address, Password, Phone Number, ID, Shipping Address
+Billing Fields: Card Number, CVV, Expiry Date 
+
+login.html
+- user form with wtf quick forms
+
+new_item.html: (login_required by Owner)
+- form for adding new items to website
+
+edit_item.html: (login_required by Owner)
+- form for editing items
+
+new_item.html or confirm_item.html: (login_required by Customer)
+
+edit_order.html: (login_required by Customer)
+- Buttons to delete items from order
+- Button to confirm order
+
+edit_billing.html:(login_required by Customer)
+- form for editing billing
+
+item: new, update, delete from inventory for owner
+item: add to order, update order, delete from order for customer
+billing: edit for customer
+
+
+
+
+Backend:
+
+Tables:
+USER
+CUSTOMER
+ORDER
+SHIPPING_PROVIDER
+WAREHOUSE
+INVENTORY
+ITEM
+REVIEWS
+COLOR
+PLACED_IN
+
+Relationships:
+USER and OWNER: Parent-Child              
+USER and CUSTOMER: Parent-Child
+
+OWNER to WAREHOUSE: One - Many (Many-One in reverse)
+WAREHOUSE to INVENTORY: Many - One (One-Many in reverse)
+OWNER to INVENTORY: One - One
+OWNER to ITEM: One - Many (Many-One in reverse)
+INVENTORY to ITEM: One - Many (Many-One in reverse)
+ITEM to REVIEW: One - Many (Many-One in reverse)
+
+CUSTOMER to BILLING: One - One
+CUSTOMER to ORDER: One - One
+CUSTOMER to SHIPPING_PROVIDER: Many - One (One-Many in reverse)
+ORDER to SHIPPING_PROVIDER: Many - One (One-Many in reverse)
+ITEM to ORDER: Many-to-Many (Needs PLACED_IN as intermediate table)
+
+COLOR?
