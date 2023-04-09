@@ -54,6 +54,7 @@
       <nav id="navbar" class="navbar">
         <ul>
           {% if current_user.is_authenticated %}
+<!--          <li>Total Price: {{totalPrice}}</li>-->
           <li>Current User: {{current_user.username}}   |   Access: {{current_user.type}}</li>
           {% endif %}
           <li><a href="{{ url_for('home') }}"  class="active">Home</a></li>

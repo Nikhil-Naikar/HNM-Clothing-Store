@@ -8,9 +8,10 @@ from dotenv import load_dotenv
 import os
 from datetime import datetime
 from functools import wraps
-from forms import SignUpForm, LoginForm, ItemForm, BillingForm, OrderForm
+from forms import SignUpForm, LoginForm, OwnerItemForm, CustomerItemForm, BillingForm, OrderForm
 from datetime import datetime
 from random import randint, randrange
+from sqlalchemy import desc
 
 # Grab current year - to be displayed in the footer
 CURRENT_YEAR = datetime.now().year
@@ -180,7 +181,7 @@ class Item(db.Model):
     size = db.Column(db.String)
     brand = db.Column(db.String)
     type = db.Column(db.String)
-    weight = db.Column(db.Float)
+    # weight = db.Column(db.Float)
     color = db.Column(db.String)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     inventory_id = db.Column(db.Integer, db.ForeignKey('inventory.id'))
@@ -211,7 +212,7 @@ class ShippingProvider(db.Model):
     __tablename__ = "shipping_provider"  # Table name
     # Fields
     id = db.Column(db.Integer, primary_key=True)
-    travel = db.Column(db.String, nullable=False)
+    travel = db.Column(db.String, nullable=False) # ship/train/truck/airplane
     weight = db.Column(db.Float, nullable=False)
 
     # Establish many-to-one relationship from Customer to ShippingProvider
@@ -410,7 +411,7 @@ def login():
 @login_required
 def owner_add_item():
     # Create an instance of the ItemForm
-    owner_add_item_form = ItemForm()
+    owner_add_item_form = OwnerItemForm()
     # If a Submit button is clicked and a POST request is made...
     if owner_add_item_form.validate_on_submit():
         # Grab item name from the item form
@@ -455,7 +456,7 @@ def owner_add_item():
                 size=owner_add_item_form.size.data,
                 brand=owner_add_item_form.brand.data,
                 type=owner_add_item_form.type.data,
-                weight=owner_add_item_form.weight.data,
+                # weight=owner_add_item_form.weight.data,
                 color=owner_add_item_form.color.data,
                 user_id=current_user.id,
                 inventory_id=temp_id
@@ -480,7 +481,7 @@ def edit_item(item_id):
     item_to_edit = Item.query.get(item_id)
     # Create an instance of the ItemForm with the fields pre-loaded with the
     # values from item_to_edit
-    edit_form = ItemForm(
+    edit_form = OwnerItemForm(
         name=item_to_edit.name,
         img_url=item_to_edit.img_url,
         price=item_to_edit.price,
@@ -488,7 +489,7 @@ def edit_item(item_id):
         size=item_to_edit.size,
         brand=item_to_edit.brand,
         type=item_to_edit.type,
-        weight=item_to_edit.weight,
+        # weight=item_to_edit.weight,
         color=item_to_edit.color
     )
     # If a Submit button is clicked and a POST request is made...
@@ -519,7 +520,7 @@ def edit_item(item_id):
         item_to_edit.size = edit_form.size.data
         item_to_edit.brand = edit_form.brand.data
         item_to_edit.type = edit_form.type.data
-        item_to_edit.weight = edit_form.weight.data
+        # item_to_edit.weight = edit_form.weight.data
         item_to_edit.color = edit_form.color.data
         # Commit Changes
         db.session.commit()
@@ -564,7 +565,7 @@ def customer_add_item(item_id):
     # Item to be added to the customer's order using the item_id argument
     item_to_add = Item.query.get(item_id)
     # Create instance of the item form with pre-populated values of the item that was clicked
-    customer_add_item_form = ItemForm(
+    customer_add_item_form = CustomerItemForm(
         name=item_to_add.name,
         img_url=item_to_add.img_url,
         price=item_to_add.price,
@@ -572,14 +573,14 @@ def customer_add_item(item_id):
         size=item_to_add.size,
         brand=item_to_add.brand,
         type=item_to_add.type,
-        weight=item_to_add.weight,
+        # weight=item_to_add.weight,
         color=item_to_add.color
     )
 
     if customer_add_item_form.validate_on_submit():
         user_order_row = Order.query.filter_by(user_id=current_user.id).first()
         user_order_row.total_price = user_order_row.total_price + item_to_add.price
-        row = PlacedIn.query.filter_by(item_id=item_id).first()
+        row = PlacedIn.query.filter_by(order_num=user_order_row.order_num).filter_by(item_id=item_id).first()
         if row:
             row.amount = row.amount + 1
         else:
@@ -592,7 +593,7 @@ def customer_add_item(item_id):
         db.session.commit()
         return redirect(url_for("home", username=current_user.username))
     return render_template("customer-add-item.html", form=customer_add_item_form, operation="Add",
-                           current_user=current_user, current_year=CURRENT_YEAR)
+                           current_user=current_user, current_year=CURRENT_YEAR, img_url=item_to_add.img_url)
 
 @app.route('/view-order', methods=["GET", "POST"])
 @customer_only
@@ -602,7 +603,7 @@ def view_order():
     order_items = []  # Items in the customers order, to be displayed
     customer_order = Order.query.filter_by(user_id=current_user.id).first()
     order_price = customer_order.total_price
-    items_in_order = PlacedIn.query.filter_by(order_num=customer_order.order_num).all()
+    items_in_order = PlacedIn.query.filter_by(order_num=customer_order.order_num).order_by(PlacedIn.amount.desc()).all()
 
     for item_in_order in items_in_order:
         item = Item.query.filter_by(id=item_in_order.item_id).first()
@@ -613,13 +614,14 @@ def view_order():
     )
 
     if order_form.validate_on_submit():
-        # # delete all items in the order
-        # records_to_delete = Item.query.join(association_table).join(Order). \
-        #     filter((association_table.c.order_num == order_to_view.order_num)).all()
-        # for record in records_to_delete:
-        #     db.session.delete(record)
-        #     db.session.commit()  # Commit changes
-        # # Delete the item_order combo in the placed_in table with the item_id that matches the queried item
+        for item_in_order in items_in_order:
+            # join placedIn row with item table
+            item_info = Item.query.filter_by(id=item_in_order.item_id).first()
+            inventory_info = Inventory.query.filter_by(id=item_info.inventory_id).first()
+            inventory_info.stock = inventory_info.stock - item_in_order.amount
+            customer_order.total_price = customer_order.total_price - (item_info.price * item_in_order.amount)
+            db.session.delete(item_in_order)
+            db.session.commit()
 
         return render_template("order_submitted.html", current_user=current_user,
                                current_year=CURRENT_YEAR)
@@ -633,17 +635,22 @@ def view_order():
 @customer_only
 @login_required
 def delete_order_item(item_id):
-    # Query for the item to be removed from the order using item_id argument
-    item_to_delete = Item.query.get(item_id)
-    # Use filter_by instead of get if you want to query with a non-primary key field
-    order_to_delete_from = Order.query.filter_by(user_id=current_user.id).first()
-    # Delete the item_order combo in the placed_in table with the item_id that matches the queried item
-    record_to_delete = Item.query.join(association_table).join(Order). \
-        filter((association_table.c.item_id == item_to_delete.id) &
-               (association_table.c.order_num == order_to_delete_from.order_num)).all()
-    # record_to_delete = association_table.query.get(item_id=item_to_delete.item_id)
-    db.session.delete(record_to_delete)
-    db.session.commit()  # Commit changes
+    # getting order details to change total price and get order_num
+    order_row = Order.query.filter_by(user_id=current_user.id).first()
+    # getting item details to get price
+    item_row = Item.query.filter_by(id=item_id).first()
+    # updating total price
+    if order_row.total_price != 0:
+        order_row.total_price = order_row.total_price - item_row.price
+
+    placedIn_row = PlacedIn.query.filter_by(order_num=order_row.order_num).first()
+    placedIn_row.amount = placedIn_row.amount - 1
+    # if amount is 0 then delete row
+    if placedIn_row.amount == 0:
+        db.session.delete(placedIn_row)
+
+    db.session.commit()
+
     # Redirect to view_order route
     return redirect(url_for("view_order", username=current_user.username))
 

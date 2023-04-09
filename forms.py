@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, DateTimeField, SelectField, SelectMultipleField
+from wtforms import StringField, SubmitField, PasswordField, DateTimeField, SelectField, SelectMultipleField, \
+    IntegerField
 from wtforms.validators import DataRequired, Email, EqualTo, URL
 import datetime
 
@@ -40,7 +41,7 @@ class ItemForm(FlaskForm):
     submit = SubmitField("Submit")
 
 
-class ItemForm(FlaskForm):
+class OwnerItemForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
     img_url = StringField(label="Image Link", validators=[DataRequired(), URL()])
     price = StringField("Price", default="0.00", validators=[DataRequired()])
@@ -55,19 +56,22 @@ class ItemForm(FlaskForm):
     color = StringField("Color")
     submit = SubmitField("Submit")
 
-class ItemForm(FlaskForm):
-    name = StringField("Name", validators=[DataRequired()])
-    img_url = StringField(label="Image Link", validators=[DataRequired(), URL()])
-    price = StringField("Price", default="0.00", validators=[DataRequired()])
-    sex = SelectField(label="Sex", choices=['Unisex', 'Male', 'Female'], validators=[DataRequired()])
+class CustomerItemForm(FlaskForm):
+    name = StringField("Name", validators=[DataRequired()], render_kw={'readonly': True})
+    # img_url = StringField(label="Image Link", validators=[DataRequired(), URL()], render_kw={'readonly': True})
+    price = StringField("Price", default="0.00", validators=[DataRequired()], render_kw={'readonly': True})
+    # sex = SelectField(label="Sex", choices=['Unisex', 'Male', 'Female'], validators=[DataRequired()], render_kw={'readonly': True})
+    sex = StringField(label="Sex", validators=[DataRequired()], render_kw={'readonly': True})
     size = SelectField(label="Size", choices=['Small', 'Medium', 'Large'], validators=[DataRequired()])
-    brand = StringField("Brand")
+    brand = StringField("Brand", render_kw={'readonly': True})
     # type = StringField(label="Type (eg. Tops, Bottoms, Accessories, Footwear)", validators=[DataRequired()])
-    type = SelectField(label="Type", choices=['Tops', 'Bottoms', 'Accessories', 'Footwear'], validators=[DataRequired()])
-    weight = StringField("Weight")
+    # type = SelectField(label="Type", choices=['Tops', 'Bottoms', 'Accessories', 'Footwear'], validators=[DataRequired()], render_kw={'readonly': True})
+    type = StringField(label="Type", validators=[DataRequired()], render_kw={'readonly': True})
+    weight = StringField("Weight", render_kw={'readonly': True})
     # colors = SelectMultipleField(label="Colors", choices=['Black', 'White', 'Brown', 'Grey', 'Blue', 'Red',
     #                                                       'Green', 'Pink', 'Purple', 'Yellow', 'Orange'])
-    color = StringField("Color")
+    color = StringField("Color", render_kw={'readonly': True})
+    amount = IntegerField("Amount")
     submit = SubmitField("Submit")
 
 
