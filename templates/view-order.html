@@ -21,19 +21,33 @@
 
       </div>
     </section><!-- End Breadcrumbs -->
+
     <section id="services" class="services">
       <div class="container">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <p style="color:red;">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
 <!--       <h4>${{ order_price }}-->
         <div class="row">
-          {% for item in order_items %}
+          {% for item,amount in order_items %}
           <div class="col-md-6">
             <div class="icon-box">
-              <img class="bi bi-briefcase" src="{{item.img_url}}">
+              <img class="bi bi-briefcase" src="{{item.img_url}}" width="350" height="350">
               <h4><a href="#">{{item.name}}</a></h4>
               <p>{{item.brand}}</p>
               <p>${{item.price}}</p>
               <p>{{item.sex}}</p>
-              <a href="{{url_for('delete_order_item', item_id=item.id)}}"  title="Delete Item from Order"> <i class="fas fa-trash cafe-icon"></i></a>
+              <p>Amount: {{amount}}</p>
+              <p>Price: {{item.price * amount}}</p>
+              <form action="{{url_for('delete_order_item', item_id=item.id)}}" method="POST">
+                <input type="number" name="amount_to_delete">
+                <input type="submit" value="Delete">
+              </form>
+<!--              <a href="{{url_for('delete_order_item', item_id=item.id)}}"  title="Delete Item from Order"> <i class="fas fa-trash cafe-icon"></i></a>-->
             </div>
           </div>
           {% endfor %}

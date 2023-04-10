@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash, abort
+from flask import Flask, render_template, redirect, url_for, flash, abort, request
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column, composite, with_polymorphic
@@ -576,18 +576,29 @@ def customer_add_item(item_id):
         # weight=item_to_add.weight,
         color=item_to_add.color
     )
-
+    amount_wanted = customer_add_item_form.amount.data
     if customer_add_item_form.validate_on_submit():
         user_order_row = Order.query.filter_by(user_id=current_user.id).first()
-        user_order_row.total_price = user_order_row.total_price + item_to_add.price
+        user_order_row.total_price = user_order_row.total_price + (item_to_add.price * amount_wanted)
         row = PlacedIn.query.filter_by(order_num=user_order_row.order_num).filter_by(item_id=item_id).first()
+        # check stock and see if can provide amount_wanted
+        inventory_row = Inventory.query.filter_by(id=item_to_add.inventory_id).first()
         if row:
-            row.amount = row.amount + 1
+            left_in_stock = inventory_row.stock - row.amount
+            if left_in_stock < amount_wanted:
+                flash("Sorry can not add {} since there are only {} left in stock".format(amount_wanted, left_in_stock))
+                return redirect(url_for("customer_add_item", item_id=item_id))
+        else:
+            if inventory_row.stock < amount_wanted:
+                flash("Sorry can not add {} since there are only {} left in stock".format(amount_wanted, inventory_row.stock))
+                return redirect(url_for("customer_add_item", item_id=item_id))
+        if row:
+            row.amount = row.amount + amount_wanted
         else:
             add_item = PlacedIn(
                 item_id=item_id,
                 order_num=user_order_row.order_num,
-                amount=1
+                amount=amount_wanted
             )
             db.session.add(add_item)
         db.session.commit()
@@ -607,7 +618,8 @@ def view_order():
 
     for item_in_order in items_in_order:
         item = Item.query.filter_by(id=item_in_order.item_id).first()
-        order_items.append(item)
+        order_items.append([item,item_in_order.amount])
+
 
     order_form = OrderForm(
         total_price=order_price
@@ -615,7 +627,11 @@ def view_order():
 
     if order_form.validate_on_submit():
         for item_in_order in items_in_order:
-            # join placedIn row with item table
+            item = Item.query.filter_by(id=item_in_order.item_id).first()
+            inventory_info = Inventory.query.filter_by(id=item.inventory_id).first()
+            if item_in_order.amount > inventory_info.stock:
+                flash("Sorry can not complete transaction because item {} has stock of {} and {} was requested".format(item.name,inventory_info.stock,item_in_order.amount))
+                return redirect(url_for("view_order", username=current_user.username))
             item_info = Item.query.filter_by(id=item_in_order.item_id).first()
             inventory_info = Inventory.query.filter_by(id=item_info.inventory_id).first()
             inventory_info.stock = inventory_info.stock - item_in_order.amount
@@ -631,7 +647,7 @@ def view_order():
                            current_year=CURRENT_YEAR, order_price=order_price)
 
 
-@app.route('/delete-order-item/<int:item_id>')
+@app.route('/delete-order-item/<int:item_id>', methods=['POST'])
 @customer_only
 @login_required
 def delete_order_item(item_id):
@@ -639,12 +655,18 @@ def delete_order_item(item_id):
     order_row = Order.query.filter_by(user_id=current_user.id).first()
     # getting item details to get price
     item_row = Item.query.filter_by(id=item_id).first()
+
+    placedIn_row = PlacedIn.query.filter_by(order_num=order_row.order_num).filter_by(item_id=item_id).first()
+    # check if can delete amount requested
+    amount_to_delete = int(request.form['amount_to_delete'])
+    if amount_to_delete > placedIn_row.amount:
+        flash("Cannot delete {} of item {} since there are only {} of this item in your order".format(amount_to_delete, item_row.name, placedIn_row.amount))
+        return redirect(url_for("view_order", username=current_user.username))
     # updating total price
     if order_row.total_price != 0:
-        order_row.total_price = order_row.total_price - item_row.price
+        order_row.total_price = order_row.total_price - (item_row.price * amount_to_delete)
 
-    placedIn_row = PlacedIn.query.filter_by(order_num=order_row.order_num).first()
-    placedIn_row.amount = placedIn_row.amount - 1
+    placedIn_row.amount = placedIn_row.amount - amount_to_delete
     # if amount is 0 then delete row
     if placedIn_row.amount == 0:
         db.session.delete(placedIn_row)
