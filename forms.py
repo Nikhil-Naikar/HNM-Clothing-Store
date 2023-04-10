@@ -67,7 +67,7 @@ class CustomerItemForm(FlaskForm):
     # type = StringField(label="Type (eg. Tops, Bottoms, Accessories, Footwear)", validators=[DataRequired()])
     # type = SelectField(label="Type", choices=['Tops', 'Bottoms', 'Accessories', 'Footwear'], validators=[DataRequired()], render_kw={'readonly': True})
     type = StringField(label="Type", validators=[DataRequired()], render_kw={'readonly': True})
-    weight = StringField("Weight", render_kw={'readonly': True})
+    # weight = StringField("Weight", render_kw={'readonly': True})
     # colors = SelectMultipleField(label="Colors", choices=['Black', 'White', 'Brown', 'Grey', 'Blue', 'Red',
     #                                                       'Green', 'Pink', 'Purple', 'Yellow', 'Orange'])
     color = StringField("Color", render_kw={'readonly': True})
