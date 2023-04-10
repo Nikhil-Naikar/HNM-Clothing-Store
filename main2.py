@@ -11,7 +11,7 @@ from functools import wraps
 from forms import SignUpForm, LoginForm, OwnerItemForm, CustomerItemForm, BillingForm, OrderForm
 from datetime import datetime
 from random import randint, randrange
-from sqlalchemy import desc
+from sqlalchemy import desc, select
 
 # Grab current year - to be displayed in the footer
 CURRENT_YEAR = datetime.now().year
@@ -615,9 +615,9 @@ def view_order():
     customer_order = Order.query.filter_by(user_id=current_user.id).first()
     order_price = customer_order.total_price
     items_in_order = PlacedIn.query.filter_by(order_num=customer_order.order_num).order_by(PlacedIn.amount.desc()).all()
-
     for item_in_order in items_in_order:
-        item = Item.query.filter_by(id=item_in_order.item_id).first()
+        # item = Item.query.filter_by(id=item_in_order.item_id).first()
+        item = Item.query.join(PlacedIn, Item.id==item_in_order.item_id).first()
         order_items.append([item,item_in_order.amount])
 
 
