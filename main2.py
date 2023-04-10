@@ -10,8 +10,8 @@ from datetime import datetime
 from functools import wraps
 from forms import SignUpForm, LoginForm, OwnerItemForm, CustomerItemForm, BillingForm, OrderForm
 from datetime import datetime
-from random import randint, randrange
-from sqlalchemy import desc, select
+from random import randint
+from sqlalchemy import desc
 
 # Grab current year - to be displayed in the footer
 CURRENT_YEAR = datetime.now().year
@@ -30,7 +30,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Secret key allows Flask-Login to use sessions (allows one to store info specific to a
 # user from one request to another) for authentication
 # app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
-import os
 app.config['SECRET_KEY'] = os.urandom(32)
 # Packages Bootstrap CSS extension into the app
 Bootstrap(app)
@@ -66,14 +65,6 @@ def customer_only(f):
         # Otherwise continue with the route function
         return f(*args, **kwargs)
     return decorated_function
-
-
-# Table called 'placed_in' for the many-to-many relationship from item to order
-# association_table = db.Table('placed_in',
-#                              db.Column('item_id', db.ForeignKey('item.id'), primary_key=True),
-#                              db.Column('order_num', db.ForeignKey('order.order_num'), primary_key=True),
-#                              db.Column('amount', db.Integer, nullable=False)
-#                              )
 
 # User Database Table
 class User(UserMixin, db.Model):
@@ -143,10 +134,12 @@ class Inventory(db.Model):
 
 class PlacedIn(db.Model):
     __tablename__ = "placed_in"
+    # Fields
     item_id = db.Column(db.Integer, db.ForeignKey('item.id'), primary_key=True)
     order_num = db.Column(db.Integer, db.ForeignKey('order.order_num'), primary_key=True)
     amount = db.Column(db.Integer, nullable=False)
 
+    # Establishing many to many relationship
     customerOrder = relationship("Order", back_populates="items")
     customerItem = relationship("Item", back_populates="customerOrders")
 
@@ -155,7 +148,7 @@ class Order(db.Model):
     # Fields
     order_num = db.Column(db.Integer, nullable=False, primary_key=True)
     order_date = db.Column(db.String)
-    total_price = db.Column(db.Integer, nullable=False)
+    total_price = db.Column(db.Float, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     shipping_provider_id = db.Column(db.Integer, db.ForeignKey('shipping_provider.id'))
 
@@ -165,9 +158,7 @@ class Order(db.Model):
     # Establish many-to-one relationship from Order to ShippingProvider
     shipping_provider = relationship("ShippingProvider", back_populates="orders")
 
-    # Establish many-to-many relationship from Item to Order
-    # item = relationship("Item", secondary=association_table, back_populates='order')
-#     placedIn = relationship("PlacedIn", back_populates="ord")
+    # Establish many-to-many relationship
     items = relationship('PlacedIn', back_populates="customerOrder")
 
 class Item(db.Model):
@@ -181,7 +172,6 @@ class Item(db.Model):
     size = db.Column(db.String)
     brand = db.Column(db.String)
     type = db.Column(db.String)
-    # weight = db.Column(db.Float)
     color = db.Column(db.String)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     inventory_id = db.Column(db.Integer, db.ForeignKey('inventory.id'))
@@ -192,8 +182,7 @@ class Item(db.Model):
     # Establish one-to-many relationship from Inventory to Item
     inventory = relationship("Inventory", back_populates="item")
 
-    # Establish many-to-many relationship from Item to Order
-    # order = relationship("Order", secondary=association_table, back_populates="item")
+    # Establish many-to-many relationship
     customerOrders = relationship('PlacedIn', back_populates="customerItem")
 
 class Billing(db.Model):
@@ -307,66 +296,6 @@ def sign_up():
         # Log new_customer in
         login_user(new_user)
         return redirect(url_for("home", username=current_user.username))
-        # if sign_up_form.type == "Owner":  # If the user type in sign up form is Owner...
-        #     # If an Owner with the same email address is already created ...
-        #     if User.query.filter_by(email_address=sign_up_form.email.data).first():
-        #         # Display the following message above the form
-        #         flash("Sorry, this email has already been registered. Please log in instead.")
-        #         # Redirect to the login route
-        #         return redirect(url_for("login"))
-        #     # If no Owner with that email address is found, create a new Owner
-        #     new_owner = Owner()
-        #     # Set username of new_owner to the one entered in the sign up form
-        #     new_owner.username = sign_up_form.username.data
-        #     # Set password of new_owner to the one entered in the sign up form after hashing it
-        #     new_owner.password = generate_password_hash(sign_up_form.password.data, method="pbkdf2:sha256",
-        #                                                 salt_length=8)
-        #     # Set email_address of new_owner to the one entered in the sign up form
-        #     new_owner.email_address = sign_up_form.email.data
-        #     # Add new_owner to the Database
-        #     db.session.add(new_owner)
-        #     # Commit changes
-        #     db.session.commit()
-        #     # Log new_owner in
-        #     login_user(new_owner)
-        #     # Redirect to home route
-        #     return redirect(url_for("home", username=current_user.username))
-        # # If user type in sign up form is Customer...
-        # if sign_up_form.type == "Customer":
-        #     # If a Customer with the same email address is already created ...
-        #     if Customer.query.filter_by(email_address=sign_up_form.email.data).first():
-        #         # Display the following message above the form
-        #         flash("Sorry, this email has already been registered. Please log in instead.")
-        #         # Redirect to the login route
-        #         return redirect(url_for("login"))
-        #     # If no Customer with that email address is found, create a new Customer
-        #     new_customer = Customer()
-        #     # Set username of new_customer to the one entered in the sign up form
-        #     new_customer.username = sign_up_form.username.data
-        #     # Set password of new_customer to the one entered in the sign up form after hashing it
-        #     new_customer.password = generate_password_hash(sign_up_form.password.data, method="pbkdf2:sha256",
-        #                                                    salt_length=8)
-        #     # Set email_address of new_customer to the one entered in the sign up form
-        #     new_customer.email_address = sign_up_form.email.data
-        #     # Add new_customer to the Database
-        #     db.session.add(new_customer)
-        #     # Commit changes
-        #     db.session.commit()
-        #
-        #     # Create new Billing and populate it with the corresponding info from the sign up form
-        #     new_billing = Billing(
-        #         card_number=sign_up_form.card_number.data,
-        #         expiry_date=sign_up_form.expiry_date.data,
-        #         cvv=sign_up_form.cvv.data,
-        #         customer_id=new_customer.id
-        #     )
-        #     # Add new_billing to the database
-        #     db.session.add(new_billing)
-        #     # Commit changes
-        #     db.session.commit()
-        #     # Log new_customer in
-        #     login_user(new_customer)
-        #     return redirect(url_for("home", username=current_user.username))
     # If GET request, simply render signup.html with the following arguments
     return render_template("signup.html", form=sign_up_form, current_user=current_user, current_year=CURRENT_YEAR)
 
@@ -418,15 +347,15 @@ def owner_add_item():
         new_item_name = owner_add_item_form.name.data
         # If an item with the same name already exists...
         item_row = Item.query.filter_by(name=new_item_name).first()
+        date_and_time = current_data_time.strftime("%d/%m/%Y %H:%M:%S")
         if item_row:
             # if item already in item table, then just update stock in inventory table
             item_inventory_id = item_row.inventory_id
             old_inventory_row = Inventory.query.filter_by(id=item_inventory_id).first()
-            old_inventory_row.stock = old_inventory_row.stock + 1
+            old_inventory_row.stock = old_inventory_row.stock + owner_add_item_form.amount.data
+            old_inventory_row.last_updated = date_and_time
             db.session.commit()
         else:
-            date_and_time = current_data_time.strftime("%d/%m/%Y %H:%M:%S")
-
             # making sure inventory_id does not exist and is unqiue
             run = 1
             temp_id = randint(100, 999)
@@ -439,7 +368,7 @@ def owner_add_item():
             # item not already in item table, add new item to inventory table first then add to item table
             new_inventory_row = Inventory(
                 id=temp_id,
-                stock=1,
+                stock=owner_add_item_form.amount.data,
                 last_updated=date_and_time,
                 updater_id=current_user.id
             )
@@ -494,24 +423,6 @@ def edit_item(item_id):
     )
     # If a Submit button is clicked and a POST request is made...
     if edit_form.validate_on_submit():
-        # Grab item name from the item form
-        # new_item_name = edit_form.name.data
-        # Check item with the same name already exists. If so...
-        # if Item.query.filter_by(name=new_item_name).first():
-        #     # Display a message indicating item already exists
-        #     flash("Sorry! You already have an item with this name. Please enter another one.")
-        #     # Redirect back to the edit-item route
-        #     return redirect(url_for("edit_item", item_id=item_id))
-        # Grab colors from the form
-        # new_colors = edit_form.colors.data
-        # For each color in new_colors, check if a record with the same color name and item_id exist
-        # for new_color_name in new_colors:
-        #     if Color.query.filter_by(color=new_color_name, item_id=item_id).first():
-        #         # Display message indicating the item-color combo already exists
-        #         flash(f"Sorry! There is already an item with this color: {new_color_name} Please enter another one.")
-        #         # Redirect back to the edit-item route
-        #         return redirect(url_for("edit_item", item_id=item_id))
-
         # If item-color combo doesn't exist, update the fields of the item in the database
         item_to_edit.name = edit_form.name.data
         item_to_edit.img_url = edit_form.img_url.data
@@ -525,38 +436,11 @@ def edit_item(item_id):
         # Commit Changes
         db.session.commit()
 
-        # For each color in new_colors, add the color and item_id to the Colors table
-        # for new_color_name in new_colors:
-        #     color_to_add = Color(color=new_color_name, item_id=item_id)
-        #     db.session.add(color_to_add)
-        #     db.session.commit() # Commit Changes
-
         # Redirect to home route
         return redirect(url_for("home", username=current_user.username))
     # If GET request, simply render add-item.html with the following arguments
     return render_template("add-item.html", form=edit_form, operation="Edit", current_user=current_user,
                            current_year=CURRENT_YEAR)
-
-
-@app.route('/delete-item/<int:item_id>')
-@admin_only
-@login_required
-def delete_item(item_id):
-    # Query for the item to be deleted using item_id argument
-    item_to_delete = Item.query.get(item_id)
-    # Query for all colors for that item in the colors table
-    # all_colors = Color.query.filter_by(item_id=item_id).all()
-    # # For each color in the queried colors, delete the record from the colors table
-    # for color in all_colors:
-    #     if color.item_id == item_to_delete.id:
-    #         db.session.delete(color)
-    #         db.session.commit()
-    # Delete the item from the items table in the database
-    db.session.delete(item_to_delete)
-    db.session.commit()  # Commit changes
-    # Redirect to home route
-    return redirect(url_for("home", username=current_user.username))
-
 
 @app.route('/customer-add-item/<int:item_id>', methods=["GET", "POST"])
 @customer_only
@@ -592,9 +476,11 @@ def customer_add_item(item_id):
             if inventory_row.stock < amount_wanted:
                 flash("Sorry can not add {} since there are only {} left in stock".format(amount_wanted, inventory_row.stock))
                 return redirect(url_for("customer_add_item", item_id=item_id))
+        # if order of this item already exist append new amount to it
         if row:
             row.amount = row.amount + amount_wanted
         else:
+            # add order
             add_item = PlacedIn(
                 item_id=item_id,
                 order_num=user_order_row.order_num,
@@ -617,9 +503,8 @@ def view_order():
     items_in_order = PlacedIn.query.filter_by(order_num=customer_order.order_num).order_by(PlacedIn.amount.desc()).all()
     for item_in_order in items_in_order:
         # item = Item.query.filter_by(id=item_in_order.item_id).first()
-        item = Item.query.join(PlacedIn, Item.id==item_in_order.item_id).first()
-        order_items.append([item,item_in_order.amount])
-
+        item = Item.query.join(PlacedIn, Item.id == item_in_order.item_id).first()
+        order_items.append([item, item_in_order.amount])
 
     order_form = OrderForm(
         total_price=order_price
@@ -629,9 +514,11 @@ def view_order():
         for item_in_order in items_in_order:
             item = Item.query.filter_by(id=item_in_order.item_id).first()
             inventory_info = Inventory.query.filter_by(id=item.inventory_id).first()
+            # checking stock
             if item_in_order.amount > inventory_info.stock:
                 flash("Sorry can not complete transaction because item {} has stock of {} and {} was requested".format(item.name,inventory_info.stock,item_in_order.amount))
                 return redirect(url_for("view_order", username=current_user.username))
+            # updating total price in inventory and delete order from placedIn table
             item_info = Item.query.filter_by(id=item_in_order.item_id).first()
             inventory_info = Inventory.query.filter_by(id=item_info.inventory_id).first()
             inventory_info.stock = inventory_info.stock - item_in_order.amount
@@ -655,7 +542,6 @@ def delete_order_item(item_id):
     order_row = Order.query.filter_by(user_id=current_user.id).first()
     # getting item details to get price
     item_row = Item.query.filter_by(id=item_id).first()
-
     placedIn_row = PlacedIn.query.filter_by(order_num=order_row.order_num).filter_by(item_id=item_id).first()
     # check if can delete amount requested
     amount_to_delete = int(request.form['amount_to_delete'])

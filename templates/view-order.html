@@ -39,10 +39,10 @@
               <img class="bi bi-briefcase" src="{{item.img_url}}" width="350" height="350">
               <h4><a href="#">{{item.name}}</a></h4>
               <p>{{item.brand}}</p>
-              <p>${{item.price}}</p>
+              <p>${{'%0.2f' % item.price}}</p>
               <p>{{item.sex}}</p>
               <p>Amount: {{amount}}</p>
-              <p>Price: {{item.price * amount}}</p>
+              <p>Price: ${{'%0.2f' % (item.price * amount)}}</p>
               <form action="{{url_for('delete_order_item', item_id=item.id)}}" method="POST">
                 <input type="number" name="amount_to_delete">
                 <input type="submit" value="Delete">

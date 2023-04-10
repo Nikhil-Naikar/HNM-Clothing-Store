@@ -50,10 +50,11 @@ class OwnerItemForm(FlaskForm):
     brand = StringField("Brand")
     # type = StringField(label="Type (eg. Tops, Bottoms, Accessories, Footwear)", validators=[DataRequired()])
     type = SelectField(label="Type", choices=['Tops', 'Bottoms', 'Accessories', 'Footwear'], validators=[DataRequired()])
-    weight = StringField("Weight")
+    # weight = StringField("Weight")
     # colors = SelectMultipleField(label="Colors", choices=['Black', 'White', 'Brown', 'Grey', 'Blue', 'Red',
     #                                                       'Green', 'Pink', 'Purple', 'Yellow', 'Orange'])
     color = StringField("Color")
+    amount = IntegerField("Amount", validators=[DataRequired()])
     submit = SubmitField("Submit")
 
 class CustomerItemForm(FlaskForm):
