@@ -1,3 +1,5 @@
+# NOTE: Please run the main2.py file first the create the "demoDatabase" then run this file to populate the database
+
 from flask import Flask, render_template, redirect, url_for, flash, abort, request
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
