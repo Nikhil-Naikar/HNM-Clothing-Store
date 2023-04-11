@@ -26,7 +26,7 @@ load_dotenv("./.env")
 # Create Flask application instance
 app = Flask(__name__)
 # Create a database file called clothing.db or connect to it, if it already exists
-app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///demoDatabase.db"
+app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///temptemp.db"
 # Set to False disables tracking modifications of objects and uses less memory
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Secret key allows Flask-Login to use sessions (allows one to store info specific to a

@@ -19,7 +19,7 @@ load_dotenv("./.env")
 # Create Flask application instance
 app = Flask(__name__)
 # Create a database file called clothing.db or connect to it, if it already exists
-app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///demoDatabase.db"
+app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///temptemp.db"
 # Set to False disables tracking modifications of objects and uses less memory
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Secret key allows Flask-Login to use sessions (allows one to store info specific to a
@@ -285,7 +285,7 @@ with app.app_context():
     new_item(2, "https://image.uniqlo.com/UQ/ST3/ca/imagesgoods/455359/item/cagoods_23_455359.jpg?width=750", "UNIQLO U AIRISM COTTON CREW NECK OVERSIZED T-SHIRT", 24.90, "Male", "Large", "Uniqlo", "Tops", "Yellow", 1, 345)
     new_item(3, "https://image.uniqlo.com/UQ/ST3/WesternCommon/imagesgoods/444527/item/goods_72_444527.jpg?width=750", "SUPIMA COTTON CREW NECK SHORT SLEEVE T-SHIRT", 12.90, "Female", "Small", "Uniqlo", "Tops", "Purple", 1, 234)
     new_item(4, "https://image.uniqlo.com/UQ/ST3/ca/imagesgoods/456116/item/cagoods_06_456116.jpg?width=750", "PLEATED WIDE PANTS", 40.0, "Female", "Small", "Uniqlo", "Bottoms", "Grey", 1, 555)
-    new_item(5, "https://image.uniqlo.com/UQ/ST3/ca/imagesgoods/462439/item/cagoods_31_462439.jpg?width=750", "UV PROTECTION PILE BUCKET HAT", 15.0, "Unisex", "Small", "Uniqlo", "Accessories", "Orange", 1, 879)
+    new_item(5, "https://image.uniqlo.com/UQ/ST3/WesternCommon/imagesgoods/458268/item/goods_24_458268.jpg?width=750", "UV PROTECTION PILE BUCKET HAT", 15.0, "Unisex", "Small", "Uniqlo", "Accessories", "Orange", 1, 879)
     new_item(6, "https://nb.scene7.com/is/image/NB/m990bk6_nb_05_i?$pdpflexf22x$&qlt=80&fmt=webp&wid=880&hei=880", "USA 990v6", 260.0, "Unisex", "Medium", "New Balance", "Footwear", "Black", 1, 324)
     new_order(11, "12/04/2023 14:06:48", 260.0, 2, 111)
     new_order(22, "22/04/2023 11:36:24", 35.0, 3, 111)
