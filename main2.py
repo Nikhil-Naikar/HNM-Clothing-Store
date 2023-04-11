@@ -24,7 +24,7 @@ load_dotenv("./.env")
 # Create Flask application instance
 app = Flask(__name__)
 # Create a database file called clothing.db or connect to it, if it already exists
-app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///test.db"
+app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///demoDatabase.db"
 # Set to False disables tracking modifications of objects and uses less memory
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Secret key allows Flask-Login to use sessions (allows one to store info specific to a
@@ -71,11 +71,11 @@ class User(UserMixin, db.Model):
     __tablename__ = "user"  # Table name
     # Fields
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String, nullable=False, unique=True)
-    email_address = db.Column(db.String, nullable=False, unique=True)
-    password = db.Column(db.String, nullable=False)
-    phone_number = db.Column(db.String)
-    type = db.Column(db.String, nullable=False)
+    username = db.Column(db.String(25), nullable=False, unique=True)
+    email_address = db.Column(db.String(50), nullable=False, unique=True)
+    password = db.Column(db.String(25), nullable=False)
+    phone_number = db.Column(db.String(15))
+    type = db.Column(db.String(8), nullable=False)
     shipping_provider_id = db.Column(db.Integer, db.ForeignKey("shipping_provider.id"))
 
     # Establish one-to-many relationship
@@ -102,8 +102,8 @@ class Warehouse(db.Model):
     __tablename__ = "warehouse"  # Table name
     # Fields
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, nullable=False)
-    location = db.Column(db.String, nullable=False)
+    name = db.Column(db.String(25), nullable=False)
+    location = db.Column(db.String(25), nullable=False)
     # Establish one-to-many relationship from Owner to Warehouse - creating a foreign key on the 'many' table warehouse,
     # that references the 'one' owner
     # foreign key is placed under the new field owner_id
@@ -120,7 +120,7 @@ class Inventory(db.Model):
     # Fields
     id = db.Column(db.Integer, primary_key=True)
     stock = db.Column(db.Integer, nullable=False)
-    last_updated = db.Column(db.String, nullable=False)
+    last_updated = db.Column(db.String(25), nullable=False)
     updater_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     # Establish many-to-one relationship from Warehouse to Inventory
@@ -147,8 +147,8 @@ class Order(db.Model):
     __tablename__ = "order"  # Table name
     # Fields
     order_num = db.Column(db.Integer, nullable=False, primary_key=True)
-    order_date = db.Column(db.String)
-    total_price = db.Column(db.Float, nullable=False)
+    order_date = db.Column(db.String(25))
+    total_price = db.Column(db.Float(10), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     shipping_provider_id = db.Column(db.Integer, db.ForeignKey('shipping_provider.id'))
 
@@ -167,12 +167,12 @@ class Item(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     img_url = db.Column(db.String, nullable=False)
     name = db.Column(db.String, unique=True)
-    price = db.Column(db.Float, nullable=False)
-    sex = db.Column(db.String)
-    size = db.Column(db.String)
-    brand = db.Column(db.String)
-    type = db.Column(db.String)
-    color = db.Column(db.String)
+    price = db.Column(db.Float(10), nullable=False)
+    sex = db.Column(db.String(6))
+    size = db.Column(db.String(6))
+    brand = db.Column(db.String(25))
+    type = db.Column(db.String(11))
+    color = db.Column(db.String(25))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     inventory_id = db.Column(db.Integer, db.ForeignKey('inventory.id'))
 
@@ -188,9 +188,9 @@ class Item(db.Model):
 class Billing(db.Model):
     __tablename__ = "billing"  # Table name
     # Fields
-    card_number = db.Column(db.String, primary_key=True)
-    expiry_date = db.Column(db.String)
-    cvv = db.Column(db.String)
+    card_number = db.Column(db.String(20), primary_key=True)
+    expiry_date = db.Column(db.String(10))
+    cvv = db.Column(db.String(3))
 
     # Establish one-to-one relationship from Customer to Billing
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -201,7 +201,7 @@ class ShippingProvider(db.Model):
     __tablename__ = "shipping_provider"  # Table name
     # Fields
     id = db.Column(db.Integer, primary_key=True)
-    travel = db.Column(db.String, nullable=False) # ship/train/truck/airplane
+    travel = db.Column(db.String(10), nullable=False) # ship/train/truck/airplane
     weight = db.Column(db.Float, nullable=False)
 
     # Establish many-to-one relationship from Customer to ShippingProvider
