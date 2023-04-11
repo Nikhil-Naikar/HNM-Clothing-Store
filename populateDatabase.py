@@ -1,4 +1,4 @@
-# NOTE: Please run the main2.py file first the create the "demoDatabase" then run this file to populate the database
+
 
 from flask import Flask, render_template, redirect, url_for, flash, abort, request
 from flask_bootstrap import Bootstrap
@@ -9,7 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 import os
 from functools import wraps
-from main2 import User, ShippingProvider, Warehouse, Inventory, Billing, Item, Order, PlacedIn
+# from main2 import User, ShippingProvider, Warehouse, Inventory, Billing, Item, Order, PlacedIn
 
 
 
@@ -36,6 +36,152 @@ db = SQLAlchemy(app)
 login_manager = LoginManager()
 # Configure actual application object for login
 login_manager.init_app(app)
+
+
+# User Database Table
+class User(UserMixin, db.Model):
+    __tablename__ = "user"  # Table name
+    # Fields
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(25), nullable=False, unique=True)
+    email_address = db.Column(db.String(50), nullable=False, unique=True)
+    password = db.Column(db.String(25), nullable=False)
+    phone_number = db.Column(db.String(15))
+    type = db.Column(db.String(8), nullable=False)
+    shipping_provider_id = db.Column(db.Integer, db.ForeignKey("shipping_provider.id"))
+
+    # Establish one-to-many relationship
+    warehouse = relationship("Warehouse", back_populates="user")
+
+    # Establish one-to-many relationship from Owner to Item
+    item = relationship("Item", back_populates="user")
+
+    # Establish one-to-one relationship from Owner to Inventory
+    # relationship.uselist flag indicates the placement of a scalar attribute instead of a collection on the “many”
+    # side of the relationship.
+    inventory = relationship("Inventory", uselist=False, back_populates="user")
+
+    # Establish one-to-one relationship from Customer to Billing
+    billing = relationship("Billing", uselist=False, back_populates="user")
+
+    # Establish one-to-one relationship from Customer to Order
+    order = relationship("Order", uselist=False, back_populates="user")
+
+    # Establish many-to-one relationship from Customer to ShippingProvider
+    shipping_provider = relationship("ShippingProvider", back_populates="user")
+
+class Warehouse(db.Model):
+    __tablename__ = "warehouse"  # Table name
+    # Fields
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(25), nullable=False)
+    location = db.Column(db.String(25), nullable=False)
+    # Establish one-to-many relationship from Owner to Warehouse - creating a foreign key on the 'many' table warehouse,
+    # that references the 'one' owner
+    # foreign key is placed under the new field owner_id
+    # "owner.id" The owner refers to the tablename of the Owner class.
+    buyer_id = db.Column(db.Integer, db.ForeignKey("user.id"))  # adds new column in Warehouse for foreign key
+    inventory_id = db.Column(db.Integer, db.ForeignKey('inventory.id'))
+
+    user = relationship("User", back_populates="warehouse")
+    # Establish many-to-one relationship from Warehouse to Inventory
+    inventory = relationship("Inventory", back_populates="warehouses")
+
+class Inventory(db.Model):
+    __tablename__ = "inventory"  # Table name
+    # Fields
+    id = db.Column(db.Integer, primary_key=True)
+    stock = db.Column(db.Integer, nullable=False)
+    last_updated = db.Column(db.String(25), nullable=False)
+    updater_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    # Establish many-to-one relationship from Warehouse to Inventory
+    warehouses = relationship("Warehouse", back_populates="inventory")
+
+    # Establish one-to-one relationship from Owner to Inventory
+    user = relationship("User", back_populates="inventory")
+
+    # Establish one-to-many relationship from Inventory to Item
+    item = relationship("Item", back_populates="inventory")
+
+class PlacedIn(db.Model):
+    __tablename__ = "placed_in"
+    # Fields
+    item_id = db.Column(db.Integer, db.ForeignKey('item.id'), primary_key=True)
+    order_num = db.Column(db.Integer, db.ForeignKey('order.order_num'), primary_key=True)
+    amount = db.Column(db.Integer, nullable=False)
+
+    # Establishing many to many relationship
+    customerOrder = relationship("Order", back_populates="items")
+    customerItem = relationship("Item", back_populates="customerOrders")
+
+class Order(db.Model):
+    __tablename__ = "order"  # Table name
+    # Fields
+    order_num = db.Column(db.Integer, nullable=False, primary_key=True)
+    order_date = db.Column(db.String(25))
+    total_price = db.Column(db.Float(10), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    shipping_provider_id = db.Column(db.Integer, db.ForeignKey('shipping_provider.id'))
+
+    # Establish one-to-one relationship from Customer to Order
+    user = relationship("User", back_populates="order")
+
+    # Establish many-to-one relationship from Order to ShippingProvider
+    shipping_provider = relationship("ShippingProvider", back_populates="orders")
+
+    # Establish many-to-many relationship
+    items = relationship('PlacedIn', back_populates="customerOrder")
+
+class Item(db.Model):
+    __tablename__ = "item"  # Field name
+    # Fields
+    id = db.Column(db.Integer, primary_key=True)
+    img_url = db.Column(db.String, nullable=False)
+    name = db.Column(db.String, unique=True)
+    price = db.Column(db.Float(10), nullable=False)
+    sex = db.Column(db.String(6))
+    size = db.Column(db.String(6))
+    brand = db.Column(db.String(25))
+    type = db.Column(db.String(11))
+    color = db.Column(db.String(25))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    inventory_id = db.Column(db.Integer, db.ForeignKey('inventory.id'))
+
+    # Establish one-to-many relationship from Owner to Item
+    user = relationship("User", back_populates="item")
+
+    # Establish one-to-many relationship from Inventory to Item
+    inventory = relationship("Inventory", back_populates="item")
+
+    # Establish many-to-many relationship
+    customerOrders = relationship('PlacedIn', back_populates="customerItem")
+
+class Billing(db.Model):
+    __tablename__ = "billing"  # Table name
+    # Fields
+    card_number = db.Column(db.String(20), primary_key=True)
+    expiry_date = db.Column(db.String(10))
+    cvv = db.Column(db.String(3))
+
+    # Establish one-to-one relationship from Customer to Billing
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = relationship("User", back_populates="billing")
+
+
+class ShippingProvider(db.Model):
+    __tablename__ = "shipping_provider"  # Table name
+    # Fields
+    id = db.Column(db.Integer, primary_key=True)
+    travel = db.Column(db.String(10), nullable=False) # ship/train/truck/airplane
+    weight = db.Column(db.Float, nullable=False)
+
+    # Establish many-to-one relationship from Customer to ShippingProvider
+    user = relationship("User", back_populates="shipping_provider")
+
+    # Establish many-to-one relationship from Order to ShippingProvider
+    orders = relationship("Order", back_populates="shipping_provider")
+
 
 
 def new_user(username,email_address,password,phone_number,type,shipping_provider):
@@ -121,6 +267,7 @@ def new_placed_in(item_id, order_num, amount):
     db.session.commit()
 
 with app.app_context():
+    db.create_all()  # Create database
     new_user("admin", "admin@email.com", "admin", "587-344-1212", "Owner", 111)
     new_user("c1", "c1@email.com", "c1", "587-554-1232", "Customer", 111)
     new_user("c2", "c2@email.com", "c2", "587-366-1679", "Customer", 111)

@@ -13,9 +13,11 @@ from datetime import datetime
 from random import randint
 from sqlalchemy import desc
 
+
 # Grab current year - to be displayed in the footer
 CURRENT_YEAR = datetime.now().year
 current_data_time = datetime.now()
+
 
 
 # Load .env file with the SECRET_KEY
