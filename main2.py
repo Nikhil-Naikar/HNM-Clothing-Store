@@ -26,7 +26,7 @@ load_dotenv("./.env")
 # Create Flask application instance
 app = Flask(__name__)
 # Create a database file called clothing.db or connect to it, if it already exists
-app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///temptemp.db"
+app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///demoDatabase.db"
 # Set to False disables tracking modifications of objects and uses less memory
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Secret key allows Flask-Login to use sessions (allows one to store info specific to a
@@ -585,8 +585,7 @@ def edit_billing(user_id):
         billing_to_edit.cvv = billing_form.cvv.data
         # Commit changes
         db.session.commit()
-        # Redirect to edit_billing route
-        return redirect(url_for("edit_billing", username=current_user.username))
+        return render_template("billing_updated.html", current_user=current_user, current_year=CURRENT_YEAR)
     # If GET request, simply render add-billing.html with the following arguments
     return render_template("add-billing.html", form=billing_form, current_user=current_user,
                            current_year=CURRENT_YEAR)
