@@ -535,6 +535,21 @@ def view_order():
     return render_template("view-order.html", form=order_form, order_items=order_items, current_user=current_user,
                            current_year=CURRENT_YEAR, order_price=order_price)
 
+@app.route('/delete-item/<int:item_id>')
+@admin_only
+@login_required
+def delete_item(item_id):
+    # Query for the item to be deleted using item_id argument
+    item_to_delete = Item.query.get(item_id)
+    inventory_row = Inventory.query.filter_by(id=item_to_delete.inventory_id).first()
+    placedIn_row = PlacedIn.query.filter_by(item_id=item_id).all()
+    db.session.delete(item_to_delete)
+    db.session.delete(inventory_row)
+    for row in placedIn_row:
+        db.session.delete(row)
+    db.session.commit()  # Commit changes
+    # Redirect to home route
+    return redirect(url_for("home", username=current_user.username))
 
 @app.route('/delete-order-item/<int:item_id>', methods=['POST'])
 @customer_only
