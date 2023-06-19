@@ -25,8 +25,10 @@ A **Customer** will be able to :
 
 If a user visits the website and are not signed in as either an Owner or Customer, they will only be able to view the items, sign up for an account, or log into an existing account.
  
-Examples for Owner:
-<img width="468" alt="image" src="https://github.com/WonderBoi99/HNM-Clothing-Store/assets/61436662/e55544ad-8323-44d2-9a37-24ffc38b1c61">
+Examples for Owner:<br>
+<img width="468" alt="image" src="https://github.com/WonderBoi99/HNM-Clothing-Store/assets/61436662/e55544ad-8323-44d2-9a37-24ffc38b1c61"><
+<img width="468" alt="image" src="https://github.com/WonderBoi99/HNM-Clothing-Store/assets/61436662/b8da93dd-4fa8-45f0-9850-c015bcaad7a1">
+
 <img width="468" alt="image" src="https://github.com/WonderBoi99/HNM-Clothing-Store/assets/61436662/fcf6f9cf-83dc-4951-baba-360b947f5a26">
 <img width="468" alt="image" src="https://github.com/WonderBoi99/HNM-Clothing-Store/assets/61436662/f5ec2eed-b9aa-4565-8bbd-619a1352312d"> 
 
