@@ -24,5 +24,15 @@ A **Customer** will be able to :
 * log out
 
 If a user visits the website and are not signed in as either an Owner or Customer, they will only be able to view the items, sign up for an account, or log into an existing account.
+ 
+Examples for Owner:
+* sign in 
+<img width="468" alt="image" src="https://github.com/WonderBoi99/HNM-Clothing-Store/assets/61436662/e55544ad-8323-44d2-9a37-24ffc38b1c61">
+* add item
+<img width="468" alt="image" src="https://github.com/WonderBoi99/HNM-Clothing-Store/assets/61436662/fcf6f9cf-83dc-4951-baba-360b947f5a26">
+* edit item
+<img width="468" alt="image" src="https://github.com/WonderBoi99/HNM-Clothing-Store/assets/61436662/49580c5b-0c7c-490a-b963-6b92a5bbbf59">
+
+<img width="468" alt="image" src="https://github.com/WonderBoi99/HNM-Clothing-Store/assets/61436662/f5ec2eed-b9aa-4565-8bbd-619a1352312d"> 
 
 
