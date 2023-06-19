@@ -7,21 +7,21 @@ Teamed up with a group of three individuals to construct a clothing boutique. De
 Functionalities:
 There are two types of users.
 
-An Owner is responsible for maintaining the content of the website and will be able to:
-sign in
-add items to the home page
-edit item information
-delete items from the home page
-log out
+An **Owner** will be able to:
+* sign in
+* add items to the home page
+* edit item information
+* delete items from the home page
+* log out
 
-A Customer will be able to 
-sign in
-add items to their order
-view their order
-remove items from their order
-submit an order
-edit their billing information
-log out
+A **Customer** will be able to :
+* sign in
+* add items to their order
+* view their order
+* remove items from their order
+* submit an order
+* edit their billing information
+* log out
 
 If a user visits the website and are not signed in as either an Owner or Customer, they will only be able to view the items, sign up for an account, or log into an existing account.
 
