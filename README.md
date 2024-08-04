@@ -58,7 +58,7 @@ There are two types of users, **Owner** and **Customer**.
 - Final implementation in SQLite<br/>
   ![Screenshot 2024-08-04 at 6 54 40 PM](https://github.com/user-attachments/assets/3e6383ce-0bf2-485d-97e1-93f9b7acfdfc)
 
-## Some Queries Examples 🔎
+### Some Queries Examples 🔎
 SQLAlchemy Method | SQL Equivalent |
 --- | --- | 
 items = Item.query.all() | SELECT * FROM item  |
