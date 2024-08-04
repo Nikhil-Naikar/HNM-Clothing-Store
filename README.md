@@ -11,7 +11,7 @@
 -   SQLAlchemy
 -   SQLite
 
-## Views 🎑
+## Views 🧐
 ### What a curious user who is not signed in would see:<be>
 ![Screenshot 2024-08-04 at 6 45 12 PM](https://github.com/user-attachments/assets/3d012c51-fc1e-46cb-8bdd-7420bf7481c4)
 ![Screenshot 2024-08-04 at 6 45 21 PM](https://github.com/user-attachments/assets/dfcad3ab-82fa-43b8-bd82-4e3ccf0973e4)
