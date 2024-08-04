@@ -1,30 +1,34 @@
-# HNM-Clothing-Store
+# HNM Clothing Store
 ![Screenshot 2024-08-04 at 6 04 45 PM](https://github.com/user-attachments/assets/e65c5b0a-ca78-4de7-9938-ee02c604506f)
 
+## Tech Stack 🧰
+-   HTML
+-   CSS
+-   JavaScript
+-   Bootstrap
+-   Python
+-   Flask
+-   SQLAlchemy
+-   SQLite
 
-## Short Description:
-In collaboration with a team of three, we successfully developed a clothing store website. The project involved designing the SQL database using an enhanced entity-relationship diagram and relational model. For the backend development, we utilized Python and the Flask framework, leveraging SQLite database and the SQLAlchemy library for efficient data management and storage. On the frontend side, we built the website using HTML5, CSS3, JavaScript, and the Bootstrap framework, ensuring a responsive and visually appealing user interface.
+## Functionalities 📋
+There are two types of users, **Owner** and **Customer**.
 
-## Functionalities:
-There are two types of users.
+**Owner** actions:
+- Sign in/out
+- Add items 
+- Edit items info
+- Delete items
 
-An **Owner** will be able to:
-* sign in
-* add items to the home page
-* edit item information
-* delete items from the home page
-* log out
+**Customer** actions:
+- Sign in/out
+- Add to cart
+- View cart
+- Remove items from their cart
+- Submit an order
+- Edit their billing information
 
-A **Customer** will be able to :
-* sign in
-* add items to their order
-* view their order
-* remove items from their order
-* submit an order
-* edit their billing information
-* log out
-
-If a user visits the website and are not signed in as either an Owner or Customer, they will only be able to view the items, sign up for an account, or log into an existing account.
+**Note: If a user visits the website and is not signed in as either an Owner/Customer, then they will only be able to view the items. To do more, they most sign up for an account or log into an existing account.**
  
 ## Examples for Owner's View:<be>
 ![Screenshot 2024-08-04 at 6 04 58 PM](https://github.com/user-attachments/assets/396eddac-2bef-468e-9fd3-b9ab12d8af94)
