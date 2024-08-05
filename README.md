@@ -10,6 +10,7 @@
 -   Flask
 -   SQLAlchemy
 -   SQLite
+-   Monolith Architecture (users <=> frontend & backend <=> database)
 
 ## Views 🧐
 ### What a curious user who is not signed in would see:<be>
