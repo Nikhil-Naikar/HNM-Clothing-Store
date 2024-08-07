@@ -28,7 +28,6 @@
 
 ### Logged in as customer:<br>
 ![Screenshot 2024-08-04 at 6 05 37 PM](https://github.com/user-attachments/assets/613cb50b-56a0-47fa-ba78-7dde436e42e4)
-![Screenshot 2024-08-04 at 6 05 47 PM](https://github.com/user-attachments/assets/b9436d50-3733-44d6-9953-8f31b7bab20b)
 ![Screenshot 2024-08-04 at 6 06 09 PM](https://github.com/user-attachments/assets/0b3613cc-3f8d-4997-af97-3420e01cc6d8)
 ![Screenshot 2024-08-04 at 6 06 25 PM](https://github.com/user-attachments/assets/9f7d1d71-d2bb-4249-b29c-cf631c1289c9)
 ![Screenshot 2024-08-04 at 6 51 33 PM](https://github.com/user-attachments/assets/4f7c4eeb-3dc1-4b16-b6f6-1aa3491c7d75)
